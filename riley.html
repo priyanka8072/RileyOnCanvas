@@ -1,0 +1,109 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    /*canvas {
+        border: 1px solid red;
+    }*/
+</style>
+
+<canvas id="canvas"></canvas>
+<script>
+    var canvas = document.getElementById('canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    var ctx = canvas.getContext('2d');
+
+    function drawRileyImage(colors, tickCount, n, cx, cy) {
+        var count = -1, oddLoop=0;
+        for (i = window.innerWidth; i > (n - 10); i = i - n) {
+            var x2 = 0;
+            var x3 = 0;
+            var y2 = 0;
+            var y3 = 0;
+            count++;
+            oddLoop++;
+            ctx.beginPath();
+            ctx.arc(cx, cy - (i - i / 2), i, 0, 2 * Math.PI);
+            ctx.strokeStyle = 'white';
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.stroke();
+            if (count + 1 > colors.length - 1)
+                count = 0;
+            var color = [colors[count], colors[count + 1]];
+
+            if (i > 60)
+                for (var j = 0; j <= tickCount; j++) {
+                    var angle = Math.PI * 2 / (tickCount) * j;
+                    var x0 = cx + i * Math.cos(angle);
+                    var y0 = cy - (i - i / 2) + i * Math.sin(angle);
+                    var x1 = cx - (i - 70) * Math.sin(angle);
+                    var y1 = cy - (i / 2) - 10;
+                    if (oddLoop % 2 != 0) {
+                        x1 = cx - (i) * Math.sin(angle / 400);
+                        y1 = cy - (i - i / 2) + i * Math.cos(angle / 400);
+                    }
+                    if (x0 > x1 && y0 < y1) {
+                        y1 = cy - 50;
+                        x1 = x1 + 5;
+                    }
+                    ctx.beginPath();
+                    ctx.moveTo(x0, y0);
+                    ctx.lineTo(x1, y1);
+                    if (x2 != 0) {
+                        ctx.lineTo(x3, y3);
+                        ctx.lineTo(x2, y2);
+                        ctx.closePath();
+                    }
+                    ctx.stroke();
+                    if (j % 2 == 0) {
+                        ctx.fillStyle = color[0];
+                    }
+                    else
+                        ctx.fillStyle = color[1];
+                    ctx.fill();
+                    x2 = x0;
+                    x3 = x1;
+                    y2 = y0;
+                    y3 = y1;
+                }
+        }
+    }
+
+    drawRileyImage(['white','black','white'], 200, 40, window.innerWidth / 2, window.innerHeight - 10);
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    window.addEventListener('devicemotion', function (event) {
+        clearCanvas();
+        event.preventDefault();
+        var x = event.accelerationIncludingGravity.x;
+        var y = event.accelerationIncludingGravity.y;
+        var z = event.accelerationIncludingGravity.z;
+        if (x < 0 && y > 0) {
+            drawRileyImage(['green','yellow','white', 'green', 'yellow'], 100, 10, window.innerWidth / 2, window.innerHeight - 10);
+        } else if (x > 0 && (y < 0 && y > -1)) {
+            drawRileyImage(['green','yellow','blue', 'white', 'yellow', 'white', 'blue'], 300, 30, window.innerWidth / 2, window.innerHeight - 40);
+        } else if (x > 1.5 && y > 0) {
+            drawRileyImage(['green','red','black', 'red', 'black'], 200, 40, window.innerWidth / 2, window.innerHeight - 80);
+        } else if (x < 1.5 && y > 0) {
+            drawRileyImage(['grey','orange','black', 'orange', 'grey'], 100, 20, window.innerWidth / 2, window.innerHeight - 100);
+        } else {
+            drawRileyImage(['white','black','pink'], 150, 30, window.innerWidth / 2, window.innerHeight - 60);
+        }
+    }, true);
+
+</script>
+</body>
+</html>

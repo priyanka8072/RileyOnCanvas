@@ -1,0 +1,38 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js"></script>
+</head>
+<body>
+
+
+<script>
+    var mesh, camera, scene, renderer;
+    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 100);
+    camera.position.z = 100;
+    scene = new THREE.Scene();
+    var geometry = new THREE.BoxGeometry(33, 33, 33);
+
+    var texture = new THREE.TextureLoader().load("skillset.jpg");
+    var material = new THREE.MeshBasicMaterial({map : texture});
+
+    mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+    renderer = new THREE.WebGLRenderer({antialas:true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    animate();
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        var time = Date.now() * 0.001;
+        mesh.rotation.x = time;
+        mesh.rotation.y = time;
+
+
+        renderer.render(scene, camera);
+    }
+</script>
+</body>
+</html>

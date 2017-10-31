@@ -1,0 +1,113 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<style>
+    html, body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #canvas {
+        color: firebrick;
+        border: 2px solid black;
+    }
+</style>
+<button onclick="clearCanvas()" style="width: 10%;">Clear</button>
+<br/>
+<button onclick="doSomething()" style="width: 10%;">Play</button>
+<br/>
+
+
+<div id="x"></div>
+<div id="y"></div>
+<div id="z"></div>
+
+<canvas id="canvas"></canvas>
+
+
+<script>
+    var canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    var ctx = canvas.getContext("2d");
+
+    function doSomething() {
+        navigator.vibrate(1000);
+    }
+    function success() {
+        navigator.getBattery().then(function(battery) {
+            batteryIsCharging = battery.level;
+            console.log(batteryIsCharging);
+        });
+    };
+
+    function findCoordinates() {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            var crd = pos.coords;
+            var latitude = crd.latitude;
+            var longitude = crd.longitude;
+            var accuracy = crd.accuracy;
+            console.log('Your current position is:');
+            console.log('Latitude :'+ latitude);
+            console.log('Longitude: ' + longitude);
+            console.log('More or less '+ accuracy.meters);
+        }, function(err) {
+            console.warn('ERROR(${err.code}): ${err.message}');
+        });
+    };
+
+    window.addEventListener('devicemotion', function(event) {
+        document.getElementById('x').innerText = event.acceleration.x;
+        document.getElementById('y').innerText = event.accelerationIncludingGravity.y;
+        document.getElementById('z').innerText = event.accelerationIncludingGravity.z;
+        setBarLength('x',x);
+        setBarLength('y',y);
+        setBarLength('z',z);
+
+    }, true);
+
+    function setBarLength(barId, theLength) {
+        document.getElementById(barId).style.width = theLength*1000+"px";
+    }
+    window.addEventListener('mousemove', function (e) {
+        var x = e.clientX;
+        var y = e.clientY;
+        ctx.fillStyle = "green";
+        ctx.fillRect(x + 5, y + 5, 10, 10);
+        ctx.fill();
+        ctx.fillStyle = "red";
+        ctx.arc(x, y, 2, 0, 2 * Math.PI);
+        ctx.fill();
+    });
+
+    window.addEventListener("touchmove", function (e) {
+        e.preventDefault();
+        for (var i = 0; i < e.changedTouches.length; i++) {
+            var x = e.touches[i].pageX;
+            var y = e.touches[i].pageY;
+            ctx.fillStyle = "green";
+            ctx.fillRect(x + 5, y + 5, 10, 10);
+            ctx.fill();
+            ctx.fillStyle = "yellow";
+            ctx.arc(x, y, 2, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = "black";
+            var radius = 20; // Arc radius
+            var startAngle = 0; // Starting point on circle
+            var endAngle = (Math.PI + Math.PI + 1) / 2; // End point on circle
+            var anticlockwise = i % 2 !== 0; // clockwise or anticlockwise
+            ctx.arc(x - 5, y - 5, radius, startAngle, endAngle, anticlockwise);
+            ctx.fill();
+        }
+    }, false);
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+</script>
+</body>
+</html>
